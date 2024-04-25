@@ -16,8 +16,8 @@ namespace SnowyHolidayDropship
         static MeshFilter shipComponent;
         static AudioSource musicComponent, musicFarComponent;
 
-        static System.Random rand;
-        static bool initialized, landed;
+        static System.Random rand = new();
+        static bool initialized, landed, seeded;
 
         internal static void Init(ItemDropship itemDropship)
         {
@@ -55,11 +55,9 @@ namespace SnowyHolidayDropship
                     Plugin.Logger.LogInfo("Successfully cached all asset bundle references");
                 }
 
-                rand = new(StartOfRound.Instance.randomMapSeed);
-                Plugin.Logger.LogInfo($"RNG initialized (Seed: {StartOfRound.Instance.randomMapSeed})");
-
                 initialized = true;
                 landed = false;
+                seeded = false;
             }
             catch (System.Exception e)
             {
@@ -74,6 +72,13 @@ namespace SnowyHolidayDropship
             if (!initialized || landed)
                 return;
             landed = true;
+
+            if (!seeded)
+            {
+                rand = new(StartOfRound.Instance.randomMapSeed);
+                Plugin.Logger.LogInfo($"RNG initialized (Seed: {StartOfRound.Instance.randomMapSeed})");
+                seeded = true;
+            }
 
             Plugin.Logger.LogInfo("Roll chance for holiday");
             bool jolly = RandomChance(StartOfRound.Instance.currentLevel.levelIncludesSnowFootprints ? (double)Plugin.configSnowyChance.Value : (double)Plugin.configNormalChance.Value);
