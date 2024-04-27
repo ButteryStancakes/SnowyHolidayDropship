@@ -35,13 +35,14 @@ namespace SnowyHolidayDropship
                 musicFarComponent = musicParent.Find("Music (1)").GetComponent<AudioSource>();
                 Plugin.Logger.LogInfo("Successfully cached all dropship object references");
 
-                if (shipJolly == null || music == null || musicFar == null)
-                {
+                // actually, for modded moon compatibility, it's better to re-cache the default audio clips each day
+                /*if (shipJolly == null || music == null || musicFar == null)
+                {*/
                     shipJolly = shipComponent.sharedMesh;
                     music = musicComponent.clip;
                     musicFar = musicFarComponent.clip;
                     Plugin.Logger.LogInfo("Successfully cached all pre-existing asset references");
-                }
+                //}
 
                 if (musicJolly == null || musicFarJolly == null || ship == null || musicOld == null)
                 {
