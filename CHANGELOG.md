@@ -1,3 +1,5 @@
+# v1.0.3
+- Fixed a problem that caused the old music to not be audible at long distances
 # v1.0.2
 - Fixed multiplayer sync (RNG seed should match between players now, for real)
 - Default music is now re-cached at the start of each new day (for better compatibility with modded dropship music)
