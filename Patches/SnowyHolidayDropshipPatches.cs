@@ -12,18 +12,25 @@ namespace SnowyHolidayDropship.Patches
             DropshipDecorator.Init(__instance);
         }
 
-        [HarmonyPatch(typeof(ItemDropship), "LandShipClientRpc")]
+        [HarmonyPatch(typeof(ItemDropship), nameof(ItemDropship.LandShipClientRpc))]
         [HarmonyPostfix]
         public static void PostLandShipClientRpc()
         {
             DropshipDecorator.RedecorateDropship();
         }
 
-        [HarmonyPatch(typeof(ItemDropship), "ShipLeave")]
+        [HarmonyPatch(typeof(ItemDropship), nameof(ItemDropship.ShipLeave))]
         [HarmonyPostfix]
         public static void ItemDropshipPostShipLeave()
         {
             DropshipDecorator.DropshipLeave();
+        }
+
+        [HarmonyPatch(typeof(ItemDropship), nameof(ItemDropship.DeliverVehicleClientRpc))]
+        [HarmonyPostfix]
+        public static void PostDeliverVehicleClientRpc()
+        {
+            DropshipDecorator.RedecorateDropship(true);
         }
     }
 }

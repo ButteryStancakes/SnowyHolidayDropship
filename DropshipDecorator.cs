@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections;
 using UnityEngine;
+using BepInEx.Bootstrap;
 
 namespace SnowyHolidayDropship
 {
@@ -18,6 +19,8 @@ namespace SnowyHolidayDropship
 
         static System.Random rand = new();
         static bool initialized, landed, seeded;
+
+        static GameObject artificeBlizzard;
 
         internal static void Init(ItemDropship itemDropship)
         {
@@ -36,24 +39,31 @@ namespace SnowyHolidayDropship
                 Plugin.Logger.LogInfo("Successfully cached all dropship object references");
 
                 // actually, for modded moon compatibility, it's better to re-cache the default audio clips each day
-                /*if (shipJolly == null || music == null || musicFar == null)
+                /*if (ship == null || music == null || musicFar == null)
                 {*/
-                    shipJolly = shipComponent.sharedMesh;
+                    ship = shipComponent.sharedMesh;
                     music = musicComponent.clip;
                     musicFar = musicFarComponent.clip;
                     Plugin.Logger.LogInfo("Successfully cached all pre-existing asset references");
                 //}
 
-                if (musicJolly == null || musicFarJolly == null || ship == null || musicOld == null)
+                if (musicJolly == null || musicFarJolly == null || shipJolly == null || musicOld == null)
                 {
                     AssetBundle holidayBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "snowyholidaydropship"));
                     musicJolly = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckV2Christmas");
                     musicFarJolly = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckV2ChristmasFar");
                     musicOld = holidayBundle.LoadAsset<AudioClip>("IcecreamTruck");
                     musicFarOld = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckV1Far");
-                    ship = holidayBundle.LoadAsset<Mesh>("MainShipPart");
+                    shipJolly = holidayBundle.LoadAsset<Mesh>("MainShipPart");
                     holidayBundle.Unload(false);
                     Plugin.Logger.LogInfo("Successfully cached all asset bundle references");
+                }
+
+                if (StartOfRound.Instance.currentLevel.name == "ArtificeLevel" && Chainloader.PluginInfos.ContainsKey("butterystancakes.lethalcompany.artificeblizzard"))
+                {
+                    artificeBlizzard = GameObject.Find("/Systems/Audio/BlizzardAmbience");
+                    if (artificeBlizzard != null)
+                        Plugin.Logger.LogInfo("Artifice Blizzard compatibility success");
                 }
 
                 initialized = true;
@@ -64,11 +74,11 @@ namespace SnowyHolidayDropship
             {
                 Plugin.Logger.LogError("Failed to capture references to all the dropship objects - are you playing on a modded moon?");
                 Plugin.Logger.LogError("Please send the information below to the developer, and mention what moon this error occurred on");
-                Plugin.Logger.LogError(e.Message);
+                Plugin.Logger.LogError(e);
             }
         }
 
-        internal static void RedecorateDropship()
+        internal static void RedecorateDropship(bool vehicle = false)
         {
             if (!initialized || landed)
                 return;
@@ -82,10 +92,17 @@ namespace SnowyHolidayDropship
             }
 
             Plugin.Logger.LogInfo("Roll chance for holiday");
-            bool jolly = RandomChance(StartOfRound.Instance.currentLevel.levelIncludesSnowFootprints ? (double)Plugin.configSnowyChance.Value : (double)Plugin.configNormalChance.Value);
+            bool jolly = RandomChance(IsSnowLevel() ? (double)Plugin.configSnowyChance.Value : (double)Plugin.configNormalChance.Value);
             Plugin.Logger.LogInfo("Roll chance for old music");
             bool classic = RandomChance((double)Plugin.configLegacyChance.Value);
-            if (jolly)
+
+            if (vehicle)
+            {
+                shipComponent.mesh = ship;
+                star.SetActive(false);
+                Plugin.Logger.LogInfo("Dropship: Normal (delivering vehicle)");
+            }
+            else if (jolly)
             {
                 // jolly!
                 shipComponent.mesh = shipJolly;
@@ -137,6 +154,11 @@ namespace SnowyHolidayDropship
             double rng = rand.NextDouble();
             Plugin.Logger.LogInfo($"RNG: {rng} < {chance}");
             return chance >= 1f || (chance > 0f && rng < chance);
+        }
+
+        static bool IsSnowLevel()
+        {
+            return StartOfRound.Instance.currentLevel.levelIncludesSnowFootprints && (artificeBlizzard == null || artificeBlizzard.activeSelf);
         }
     }
 }
