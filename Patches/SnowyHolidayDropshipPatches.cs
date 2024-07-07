@@ -20,6 +20,7 @@ namespace SnowyHolidayDropship.Patches
         }
 
         [HarmonyPatch(typeof(ItemDropship), nameof(ItemDropship.ShipLeave))]
+        [HarmonyPatch(typeof(ItemDropship), nameof(ItemDropship.FinishDeliveringVehicleClientRpc))]
         [HarmonyPostfix]
         public static void ItemDropshipPostShipLeave()
         {
