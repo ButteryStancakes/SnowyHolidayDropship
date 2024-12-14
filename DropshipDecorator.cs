@@ -38,23 +38,25 @@ namespace SnowyHolidayDropship
                 musicFarComponent = musicParent.Find("Music (1)").GetComponent<AudioSource>();
                 Plugin.Logger.LogInfo("Successfully cached all dropship object references");
 
-                // actually, for modded moon compatibility, it's better to re-cache the default audio clips each day
                 /*if (ship == null || music == null || musicFar == null)
-                {*/
+                {
                     ship = shipComponent.sharedMesh;
                     music = musicComponent.clip;
                     musicFar = musicFarComponent.clip;
                     Plugin.Logger.LogInfo("Successfully cached all pre-existing asset references");
-                //}
+                }*/
 
-                if (musicJolly == null || musicFarJolly == null || shipJolly == null || musicOld == null)
+                if (music == null || musicFar == null || ship == null || musicJolly == null || musicFarJolly == null || shipJolly == null || musicOld == null || musicFarOld == null)
                 {
                     AssetBundle holidayBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "snowyholidaydropship"));
+                    music = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckV2");
+                    musicFar = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckFar");
                     musicJolly = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckV2Christmas");
                     musicFarJolly = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckV2ChristmasFar");
                     musicOld = holidayBundle.LoadAsset<AudioClip>("IcecreamTruck");
-                    musicFarOld = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckV1Far");
-                    shipJolly = holidayBundle.LoadAsset<Mesh>("MainShipPart");
+                    musicFarOld = holidayBundle.LoadAsset<AudioClip>("IcecreamTruckFar_0");
+                    ship = holidayBundle.LoadAsset<Mesh>("MainShipPart");
+                    shipJolly = holidayBundle.LoadAsset<Mesh>("MainShipPart_0");
                     holidayBundle.Unload(false);
                     Plugin.Logger.LogInfo("Successfully cached all asset bundle references");
                 }

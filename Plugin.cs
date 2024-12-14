@@ -8,7 +8,7 @@ namespace SnowyHolidayDropship
     [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        const string PLUGIN_GUID = "butterystancakes.lethalcompany.snowyholidaydropship", PLUGIN_NAME = "Snowy Holiday Dropship", PLUGIN_VERSION = "1.1.0";
+        const string PLUGIN_GUID = "butterystancakes.lethalcompany.snowyholidaydropship", PLUGIN_NAME = "Snowy Holiday Dropship", PLUGIN_VERSION = "1.1.1";
         public static ConfigEntry<float> configSnowyChance, configNormalChance, configLegacyChance;
 
         internal static new ManualLogSource Logger;
