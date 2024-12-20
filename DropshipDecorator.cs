@@ -68,6 +68,9 @@ namespace SnowyHolidayDropship
                         Plugin.Logger.LogInfo("Artifice Blizzard compatibility success");
                 }
 
+                if (star != null)
+                    star.SetActive(false);
+
                 initialized = true;
                 landed = false;
                 seeded = false;
