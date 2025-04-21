@@ -2,20 +2,32 @@
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using HarmonyLib;
+using BepInEx.Bootstrap;
 
 namespace SnowyHolidayDropship
 {
     [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
+    [BepInDependency(GUID_LOBBY_COMPATIBILITY, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
-        const string PLUGIN_GUID = "butterystancakes.lethalcompany.snowyholidaydropship", PLUGIN_NAME = "Snowy Holiday Dropship", PLUGIN_VERSION = "1.1.2";
-        public static ConfigEntry<float> configSnowyChance, configNormalChance, configLegacyChance;
-
+        internal const string PLUGIN_GUID = "butterystancakes.lethalcompany.snowyholidaydropship", PLUGIN_NAME = "Snowy Holiday Dropship", PLUGIN_VERSION = "1.1.4";
         internal static new ManualLogSource Logger;
+
+        const string GUID_LOBBY_COMPATIBILITY = "BMX.LobbyCompatibility";
+
+        public static ConfigEntry<float> configSnowyChance, configNormalChance, configLegacyChance;
 
         void Awake()
         {
-			AcceptableValueRange<float> percentage = new(0f, 1f);
+            Logger = base.Logger;
+
+            if (Chainloader.PluginInfos.ContainsKey(GUID_LOBBY_COMPATIBILITY))
+            {
+                Logger.LogInfo("CROSS-COMPATIBILITY - Lobby Compatibility detected");
+                LobbyCompatibility.Init();
+            }
+
+            AcceptableValueRange<float> percentage = new(0f, 1f);
             string chanceHint = " (0 = never, 1 = guaranteed, or anything in between - 0.5 = 50% chance)";
 
             configSnowyChance = Config.Bind(
@@ -38,7 +50,6 @@ namespace SnowyHolidayDropship
 
             new Harmony(PLUGIN_GUID).PatchAll();
 
-            Logger = base.Logger;
             Logger.LogInfo($"{PLUGIN_NAME} v{PLUGIN_VERSION} loaded");
         }
     }
